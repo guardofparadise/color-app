@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from "@material-ui/styles";
-import classNames from "classnames";
-import styles from "./styles/ColorBoxStyles";
 import './ColorBox.css';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -42,4 +39,4 @@ class ColorBox extends Component {
 	}
 }
 
-export default withStyles(styles)(ColorBox);
+export default ColorBox;
