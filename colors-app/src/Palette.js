@@ -3,6 +3,7 @@ import ColorBox from "./ColorBox";
 import './Palette.css'
 import uuid from 'uuid';
 import Navbar from './Navbar';
+import PaletteFooter from './PaletteFooter';
 class Palette extends Component {
 
 	state = {
@@ -19,24 +20,28 @@ class Palette extends Component {
 	}
 
   render() {
-		const { colors, paletteName, emoji } = this.props.palette;
+		const { colors, paletteName, emoji, id } = this.props.palette;
 		const { level, format } = this.state
 		const colorBoxes = colors[level].map(color => (
-			<ColorBox background={color[format]} name={color.name} key={uuid.v4()} />
+			<ColorBox 
+				background={color[format]} 
+				name={color.name} 
+				key={uuid.v4()} 
+				id={color.id}
+				paletteId={id}
+				showLink={true}
+			/>
 		));
 		
 
 
     return (
       <div className="Palette">
-				<Navbar handleChange={this.changeFromat} level={this.state.level} changeLevel={this.changeLevel} />
+				<Navbar handleChange={this.changeFromat} level={this.state.level} changeLevel={this.changeLevel} showingAllColors={true} />
 				<div className="Palette-colors">
 					{colorBoxes}
 				</div>
-				<footer className="Palette-footer">
-					{paletteName}
-					<span className="emoji">{emoji}</span>
-				</footer>
+				<PaletteFooter paletteName={paletteName} emoji={emoji} />
 			</div>
     );
   }
