@@ -3,26 +3,26 @@ import sizes from "./sizes";
 export default {
   ColorBox: {
     width: "20%",
-    height: props => (props.showingFullPalette ? "25%" : "50%"),
+    height: props => (props.showFullPalette ? "25%" : "50%"),
     margin: "0 auto",
     display: "inline-block",
     position: "relative",
     cursor: "pointer",
-    marginBottom: "-3.5px",
+    marginBottom: "-4px",
     "&:hover button": {
       opacity: 1
     },
     [sizes.down("lg")]: {
       width: "25%",
-      height: props => (props.showingFullPalette ? "20%" : "33.3333%")
+      height: props => (props.showFullPalette ? "20%" : "33.3333%")
     },
     [sizes.down("md")]: {
       width: "50%",
-      height: props => (props.showingFullPalette ? "10%" : "20%")
+      height: props => (props.showFullPalette ? "10%" : "20%")
     },
     [sizes.down("xs")]: {
       width: "100%",
-      height: props => (props.showingFullPalette ? "5%" : "10%")
+      height: props => (props.showFullPalette ? "5%" : "10%")
     }
   },
   copyText: {
