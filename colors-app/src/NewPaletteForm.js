@@ -2,88 +2,30 @@ import React, { Component } from "react";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
+import PaletteFormNav from './PaletteFormNav';
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
 import Button from "@material-ui/core/Button";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ChromePicker } from 'react-color';
+import { ValidatorForm } from "react-material-ui-form-validator";
+import ColorPickerForm from './ColorPickerForm';
 import { arrayMove } from "react-sortable-hoc";
 import DraggableColorList from './DraggableColorList';
+import styles from './styles/NewPaletteFormStyles';
 
  const drawerWidth = 400;
 
- const styles = theme => ({
-  root: {
-    display: "flex"
-  },
-  appBar: {
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-  },
-  menuButton: {
-    marginLeft: 12,
-    marginRight: 20
-  },
-  hide: {
-    display: "none"
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0
-  },
-  drawerPaper: {
-    width: drawerWidth
-  },
-  drawerHeader: {
-    display: "flex",
-    alignItems: "center",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-    justifyContent: "flex-end"
-  },
-  content: {
-		flexGrow: 1,
-		height: "calc(100vh - 64px)",
-    padding: theme.spacing.unit * 3,
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    marginLeft: -drawerWidth
-  },
-  contentShift: {
-    transition: theme.transitions.create("margin", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    }),
-    marginLeft: 0
-  }
-});
-
 
  class NewPaletteForm extends Component {	
+	static defaultProps = {
+		maxColors: 20
+	}
+
   state = {
 		open: true,
-		currentColor: "teal",
-		colors: [],
-		newName: "",
-		newPaletteName: ""
+		colors: this.props.palettes[0].colors,
+		
 	};
 	
 	componentDidMount() {
@@ -99,11 +41,6 @@ import DraggableColorList from './DraggableColorList';
 			)
 		);
 
-		ValidatorForm.addValidationRule('isPaletteNameUnique', value => 
-			this.props.palettes.every(
-				({ paletteName }) => paletteName.toLowerCase() !== value.toLowerCase()
-			)
-		);
 	}
 
    handleDrawerOpen = () => {
@@ -114,15 +51,7 @@ import DraggableColorList from './DraggableColorList';
     this.setState({ open: false });
 	};
 	
-	updateCurrentColor = (newColor) => {
-		this.setState({ currentColor: newColor.hex})
-	}
-
-	addNewColor = () => {
-		const newColor = {
-			color: this.state.currentColor,
-			name: this.state.newName
-		}
+	addNewColor = (newColor) => {
 		this.setState({colors: [...this.state.colors, newColor], newName: ''})
 	}
 
@@ -130,11 +59,10 @@ import DraggableColorList from './DraggableColorList';
 		this.setState({ [e.target.name]: e.target.value })
 	}
 
-	savePalette = () => {
-		let newName = this.state.newPaletteName;
+	savePalette = (newPaletteName) => {
 		const newPalette = {
-			paletteName: newName,
-			id: newName.toLowerCase().replace(/ /g, "-"),
+			paletteName: newPaletteName,
+			id: newPaletteName.toLowerCase().replace(/ /g, "-"),
 			colors: this.state.colors
 		}
 		this.props.savePalette(newPalette);
@@ -151,51 +79,31 @@ import DraggableColorList from './DraggableColorList';
 		}))
 	}
 
+	clearColors = () => {
+		this.setState({ colors: [] })
+	}
+
+	addRandomColor = () => {
+		const allColors = this.props.palettes.map(p => p.colors).flat();
+		let rand = Math.floor(Math.random() * allColors.length);
+		const randomColor = allColors[rand];
+		this.setState({ colors: [...this.state.colors, randomColor]})
+		console.log(allColors);
+	}
+
    render() {	  
-    const { classes } = this.props;
-    const { open } = this.state;
+    const { classes, maxColors, palettes } = this.props;
+		const { open, colors } = this.state;
+		const paletteIsFull = colors.length >= maxColors;
 
      return (	 
 			<div className={classes.root}>
-      <CssBaseline />
-        <AppBar
-					color="default"
-          position='fixed'
-          className={classNames(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-        >
-          <Toolbar disableGutters={!open}>
-            <IconButton
-              color='inherit'
-              aria-label='Open drawer'
-              onClick={this.handleDrawerOpen}
-              className={classNames(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant='h6' color='inherit' noWrap>
-              Persistent drawer
-            </Typography>
-						<ValidatorForm onSubmit={this.savePalette}>
-							<TextValidator 
-								name="newPaletteName" 
-								label="Palette Name" 
-								onChange={this.handleChange} 
-								value={this.state.newPaletteName} 
-								validators={["required", "isPaletteNameUnique"]}
-								errorMessages={["Enter Palette name", "Palette Name Used"]}
-							/>
-							<Button
-								variant="contained"
-								color="primary"
-								type="submit"
-							>
-								Save Palette
-							</Button>
-						</ValidatorForm>
-          </Toolbar>
-        </AppBar>
+			<PaletteFormNav 
+				handleDrawerOpen={this.handleDrawerOpen} 
+				savePalette={this.savePalette} 
+				palettes={palettes} 
+				open={open} 
+			/>
         <Drawer
           className={classes.drawer}
           variant='persistent'
@@ -211,31 +119,28 @@ import DraggableColorList from './DraggableColorList';
             </IconButton>
           </div>
 					<Divider />
-					<Typography variant="h4">Design your palette</Typography>
 					<div>
-						<Button variant='contained' color='secondary'>Clear Palette</Button>
-						<Button variant='contained' color='primary'>Random Color</Button>						
+						<Typography variant="h4">Design your palette</Typography>
+						<div className={classes.buttons}>
+							<Button 
+								variant='contained' 
+								color='secondary'
+								className={classes.button}
+								onClick={this.clearColors}
+								>
+								Clear Palette
+							</Button>
+							<Button 
+								variant='contained' 
+								color='primary'
+								className={classes.button}
+								onClick={this.addRandomColor}
+								disabled={paletteIsFull}
+								>Random Color</Button>						
+						</div>
 					</div>
 
-					<ChromePicker 
-						color={this.state.currentColor} 
-						onChangeComplete={this.updateCurrentColor} />
-					<ValidatorForm onSubmit={this.addNewColor}>
-						<TextValidator 
-							value={this.state.newName}
-							name="newName"
-							onChange={this.handleChange}
-							validators={["required", "isColorUnique", "isColorNameUnique"]}
-							errorMessages={["enter color name", "Color already exists", "Color name should be unique"]}
-						/>
-						<Button 
-							variant='contained' 
-							color='primary' 
-							type="submit"
-							style={{background: this.state.currentColor}}>
-							Add Color
-					</Button>	
-					</ValidatorForm>
+					<ColorPickerForm addNewColor={this.addNewColor} paletteIsFull={paletteIsFull} />
         </Drawer>
         <main
           className={classNames(classes.content, {
