@@ -16,11 +16,16 @@ const styles = theme => ({
     }),
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+		alignItems: "center",
+		width: "100%",
     height: "64px"
   },
   appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
+		width: `calc(100% - ${drawerWidth}px)`,
+    flexDirection: "row",
+    justifyContent: "space-between!important",
+		alignItems: "center",
+    height: "64px",
     marginLeft: drawerWidth,
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
@@ -46,7 +51,10 @@ const styles = theme => ({
       margin: "0 0.2rem",
       padding: "0.3rem"
     }
-  }
+	},
+	link: {
+		textDecoration: "none"
+	}
 });
 
 export default styles;

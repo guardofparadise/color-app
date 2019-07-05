@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
+import PaletteMetaForm from './PaletteMetaForm';
 import styles from './styles/PaletteFormNavStyles';
 import classNames from "classnames";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -33,7 +34,7 @@ class PaletteFormNav extends Component {
 	
 
 	render() {
-		const { open, classes } = this.props;
+		const { open, classes, savePalette } = this.props;
 		const { newPaletteName } = this.state;
 		return (
 			<div>
@@ -57,29 +58,8 @@ class PaletteFormNav extends Component {
             <Typography variant='h6' color='inherit' noWrap>
               Persistent drawer
             </Typography>
-						<ValidatorForm onSubmit={() => this.props.savePalette(newPaletteName)}>
-							<TextValidator 
-								name="newPaletteName" 
-								label="Palette Name" 
-								onChange={this.handleChange} 
-								value={this.state.newPaletteName} 
-								validators={["required", "isPaletteNameUnique"]}
-								errorMessages={["Enter Palette name", "Palette Name Used"]}
-							/>
-							<Button
-								variant="contained"
-								color="primary"
-								type="submit"
-							>
-								Save Palette
-							</Button>
-							<Link to="/">
-								<Button variant='contained' color='secondary'>
-									Go Back
-								</Button>
-							</Link>
-						</ValidatorForm>
           </Toolbar>
+					<PaletteMetaForm classes={classes} savePalette={savePalette} />
         </AppBar>
 			</div>
 		)

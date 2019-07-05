@@ -60,12 +60,10 @@ import styles from './styles/NewPaletteFormStyles';
 	}
 
 	savePalette = (newPaletteName) => {
-		const newPalette = {
-			paletteName: newPaletteName,
-			id: newPaletteName.toLowerCase().replace(/ /g, "-"),
-			colors: this.state.colors
-		}
-		this.props.savePalette(newPalette);
+		newPaletteName.id = newPaletteName.paletteName.toLowerCase().replace(/ /g, "-");
+		newPaletteName.colors = this.state.colors;
+		
+		this.props.savePalette(newPaletteName);
 		this.props.history.push('/');
 	}
 
