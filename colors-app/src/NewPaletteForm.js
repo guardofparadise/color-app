@@ -12,6 +12,7 @@ import { ValidatorForm } from "react-material-ui-form-validator";
 import ColorPickerForm from './ColorPickerForm';
 import { arrayMove } from "react-sortable-hoc";
 import DraggableColorList from './DraggableColorList';
+import seedColors from './seedColors';
 import styles from './styles/NewPaletteFormStyles';
 
  const drawerWidth = 400;
@@ -24,11 +25,12 @@ import styles from './styles/NewPaletteFormStyles';
 
   state = {
 		open: true,
-		colors: this.props.palettes[0].colors,
-		
+		colors: seedColors[0].colors,
+		seedPalettes: seedColors
 	};
 	
 	componentDidMount() {
+		console.log(this.props)
 		ValidatorForm.addValidationRule('isColorNameUnique', value => 
 			this.state.colors.every(
 				({ name }) => name.toLowerCase() !== value.toLowerCase()
@@ -82,11 +84,20 @@ import styles from './styles/NewPaletteFormStyles';
 	}
 
 	addRandomColor = () => {
-		const allColors = this.props.palettes.map(p => p.colors).flat();
+		const allColors = this.state.seedPalettes.map(p => p.colors).flat();
 		let rand = Math.floor(Math.random() * allColors.length);
-		const randomColor = allColors[rand];
+		let randomColor;
+		let isDuplicateColor = true;
+		while(isDuplicateColor) {
+			rand = Math.floor(Math.random() * allColors.length);
+			randomColor = allColors[rand];
+			isDuplicateColor = this.state.colors.some(
+				color => color.name === randomColor.name
+			)
+			console.log(randomColor)
+		}
+		
 		this.setState({ colors: [...this.state.colors, randomColor]})
-		console.log(allColors);
 	}
 
    render() {	  
@@ -148,6 +159,7 @@ import styles from './styles/NewPaletteFormStyles';
           <div className={classes.drawerHeader} />
 					
 					<DraggableColorList 
+						distance={20}
 						axis="xy" 
 						colors={this.state.colors} 
 						removeColor={this.removeColor} 
